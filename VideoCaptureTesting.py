@@ -26,6 +26,19 @@ import numpy as np
 #import antigravity
 import time
 
+from array import array
+from socket import *
+import sys
+import select
+
+address = ('localhost', 12345)
+server_socket = socket(AF_INET, SOCK_DGRAM)
+server_socket.bind(address)
+
+rows = 120
+cols = 176
+numpix = rows*cols
+
 count1 = 0
 count2 = 0
 fileName1 = "image1"
@@ -89,17 +102,34 @@ while rval1 & rval2:
     
 
     # undistort
-    newcamera1, roi = cv2.getOptimalNewCameraMatrix(K, d, (w1,h1), 1, (w1,h1)) 
+    newcamera1, roi = cv2.getOptimalNewCameraMatrix(K, d, (w1,h1), 0) 
     newImageUndist1 = cv2.undistort(img, K, d, None, newcamera1)
         
 #    newcamera2, roi = cv2.getOptimalNewCameraMatrix(K, d, (w2,h2), 0) 
 #    newImage2 = cv2.undistort(newImage2, K, d, None, newcamera2)
 #        
         
-    cv2.imshow("preview1",img)
+    cv2.imshow("preview1",frame1)
     rval1, frame1 = vc1.read()
-    cv2.imshow("preview2",newImageUndist1)
+    cv2.imshow("preview2",frame2)
     rval2, frame2 = vc2.read()
+    
+    recv1, addr = server_socket.recvfrom(65536)
+    recv2, addr = server_socket.recvfrom(65536)
+    if recv1[0] == 1:        
+        recv = recv1 + recv2
+    elif recv2[0] == 2:
+        recv = recv1 + recv2
+    elif recv1[0] == 2:
+        recv = recv2 + recv1            
+    else:
+        recv = recv2 + recv1
+    fImg = array('f', recv)
+    
+    img = np.reshape(fImg, (-1, cols))
+    
+    	# Display
+    cv2.imshow('DepthImage', img)
     key = cv2.waitKey(20)	#every 20 ms, checks if a key has been pressed.
     if key == 27: # exit on ESC
         break
@@ -110,5 +140,6 @@ while rval1 & rval2:
     
 cv2.destroyWindow("preview1")
 cv2.destroyWindow("preview2")
+cv2.destroyWindow('DepthImage')
 
 
