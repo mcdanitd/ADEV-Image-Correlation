@@ -33,32 +33,36 @@ import select
 
 class CamFeed:
     
-    self.size = []
+#    self.size = []
         
     # distortion removal matrices
     #K = np.array([[221.36336647, 0, 152.0058037], [0, 220.07218505, 105.41377619], [0, 0, 1]])
     #d = np.array([-0.37843677, 0.1629267, 0, 0, 0]) # just use first two terms (no translation)
     def __init__(self):
-        cv2.namedWindow("preview1")
-        cv2.namedWindow("preview2")
+#        cv2.namedWindow("preview1")
+#        cv2.namedWindow("preview2")
         self.vc1 = cv2.VideoCapture(1)
         self.vc2 = cv2.VideoCapture(2)
+        while (not (self.camsOpen())):
+            pass
     
     def camsOpen(self):
         if self.vc1.isOpened(): # try to get the first frame
-            rval1, frame1 = vc1.read()
+            rval1, frame1 = self.vc1.read()
         else:
             rval1 = False
         
         if self.vc2.isOpened(): # try to get the first frame
-            rval2, frame2 = vc2.read()
+            rval2, frame2 = self.vc2.read()
         else:
             rval2 = False
+#        
+#        if (!rval2):
+#            
+#            && (rval1 == True)):
+#            return True
         
-        if ((rval2 == True) && (rval1 == True)):
-            return True
-        
-        return false
+        return rval1+rval2
             
     def getImage(self, cam):
         if cam==1:
@@ -77,11 +81,11 @@ class CamFeed:
         #    newImage2 = cv2.undistort(newImage2, K, d, None, newcamera2)
         #       
             # rotate images so they look right
-        M = self.cv2.getRotationMatrix2D((w/2,h/2),180,1)    
-        frame = self.cv2.warpAffine(frame,M,(w,h))
+        M = cv2.getRotationMatrix2D((w/2,h/2),180,1)    
+        frame = cv2.warpAffine(frame,M,(w,h))
             
              # display the image to the windows   
-        cv2.imshow("preview1",frame)
+#        cv2.imshow("preview1",frame)
         return frame
      
        
