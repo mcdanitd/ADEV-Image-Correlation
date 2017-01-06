@@ -43,6 +43,12 @@ class CamFeed:
 #        cv2.namedWindow("preview2")
         self.vc1 = cv2.VideoCapture(1)
         self.vc2 = cv2.VideoCapture(2)
+        
+        self.vc1.set(3,1600)
+        self.vc1.set(4,1200)
+        self.vc2.set(3,1600)
+        self.vc2.set(4,1200)
+        
         while (not (self.camsOpen())):
             pass
     

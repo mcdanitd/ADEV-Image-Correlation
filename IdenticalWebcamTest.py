@@ -12,7 +12,12 @@ import numpy as np
 #import antigravity
 
 vc1 = cv2.VideoCapture(1)
-vc2 = cv2.VideoCapture(1)
+vc2 = cv2.VideoCapture(2)
+
+vc1.set(3,1600)
+vc1.set(4,1200)
+vc2.set(3,1600)
+vc2.set(4,1200)
 
 if vc1.isOpened(): # try to get the first frame
     rval1, frame1 = vc1.read()
@@ -32,7 +37,7 @@ if rval2 == False:
 cam1 = 0    # 
 for i in range(0,5):    #collect data from first camera
     rval1, frame1 = vc1.read()
-    frame1 = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2HSV)
 
     cam1 = cam1 + frame1
 
@@ -42,18 +47,24 @@ raw_input()
 cam2 = 0
 for j in range(0,5):    #collect data from second camera
     rval2, frame2 = vc2.read()
-    frame2 = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2HSV)
     cam2 = cam2 + frame2
 
+for prop in range(0,23):
+    print(vc1.get(prop))
+        
 # find the average value in each pixel
 avgCam1 = [x/i for x in cam1]
 avgCam2 = [x/j for x in cam2]
+
+cv2.imshow('1',cam1)
+cv2.imshow('2',cam2)
 
 count = 0
 h, w = cam1.shape[:2]
 for y in range(0,h):
     for x in range(0,w):
-        if abs(cam1[y,x,1]-cam2[y,x,1])<=100:
+        if abs(cam1[y,x,1]-cam2[y,x,1])<=50:
             count = count + 1
 
 print h*w   #total number of pixels

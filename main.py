@@ -9,6 +9,7 @@ import time
 #print "opening PmdUdpDumper"
 #os.system("C:/ADEV/cppToPy/src/c/build-PmdUdpDumper-Desktop_Qt_5_7_0_MinGW_32bit-Debug/debug/PmdUdpDumper.exe")
 
+tolerance = 70
 
 print "opening camera"
 feed = camFeed.CamFeed()
@@ -35,7 +36,6 @@ mid25SuccessHistory = 0
 #depthimagefile = 0;
 
 while(1):
-#for jrog in range(0,6):
     
     loops+=1
         
@@ -43,8 +43,8 @@ while(1):
     left = feed.getImage(1)
     right = feed.getImage(2)
     
-    left = cv2.cvtColor(left, cv2.COLOR_RGB2GRAY)
-    right = cv2.cvtColor(right, cv2.COLOR_RGB2GRAY)
+    left = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
+    right = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
     
     depthArray4 = depthArray3
     depthArray3 = depthArray2
@@ -83,7 +83,7 @@ while(1):
     leftInverseMap = numpy.zeros((webcamRows,webcamColumns,1))
     rightInverseMap = numpy.zeros((webcamRows,webcamColumns,1))
 
-    errors = numpy.zeros((hArray,wArray,1))
+    errors = numpy.zeros((hArray,wArray),dtype=int)
     
     compArray = numpy.zeros((2,hArray,wArray), dtype=numpy.uint8)
     midCompArray = numpy.zeros((2,hArray/2,wArray/2))
@@ -107,7 +107,7 @@ while(1):
             BL = 90 - DL
             lWebcamXValue = (BL + 45)*webcamColumns/cameraMaxHorzAngle
 
-            if (lWebcamXValue < 640) and (lWebcamXValue>=0):
+            if (lWebcamXValue < w) and (lWebcamXValue>=0):
                 leftMap[r,c,0] = lWebcamYValue
                 leftMap[r,c,1] = lWebcamXValue
                 compArray[0,r,c] = int(left[lWebcamYValue,lWebcamXValue])
@@ -121,19 +121,20 @@ while(1):
             DR = 180 - FL - E
             BR = DR - 90
             rWebcamXValue = (BR + 45)*webcamColumns/cameraMaxHorzAngle
-            if rWebcamXValue < 640 and rWebcamXValue>=0:
+            if rWebcamXValue < w and rWebcamXValue>=0:
                 rightMap[r,c,0] = rWebcamYValue
                 rightMap[r,c,1] = rWebcamXValue
                 compArray[1,r,c] = int(right[rWebcamYValue,rWebcamXValue])
                 rightInverseMap[rWebcamYValue,rWebcamXValue] = x
-            if abs(compArray[0,r,c]-compArray[1,r,c]<70):
+                
+            if abs(compArray[0,r,c]-compArray[1,r,c]<tolerance):
                 success+=1
                 if (r>hArray/4)and(r<hArray*3/4)and(c>wArray/4)and(c<wArray*3/4):
                     middle50Success+=1
                 if (r>3*hArray/8)and(r<hArray*5/8)and(c>wArray*3/8)and(c<wArray*5/8):
                     middle25Success+=1
             else:
-                errors[r,c,0]=255;
+                errors[r,c]=255;
                     
     print loops
     successRate = float(success)/(hArray*wArray)
@@ -149,12 +150,15 @@ while(1):
     mid25SuccessHistory = float(mid25SuccessRate+(mid25SuccessHistory*(loops-1)))/loops
     print mid25SuccessHistory
     
-    dualMap = ((compArray[0,:,:]+compArray[1,:,:])/2)
-    dualMap = cv2.cvtColor(dualMap,cv2.COLOR_GRAY2RGB)
-    
-    dualMap[errors.nonzero(),:]=[255,0,0];    
-    
-    cv2.imshow(dualMap)    
+    dualMap = ((compArray[1,:,:])+(compArray[0,:,:]))/2
+    dualMap = cv2.cvtColor(dualMap,cv2.COLOR_GRAY2BGR)
+    errLoc = numpy.where(errors==255)
+#    for r in range(0,hArray):
+#        for c in range(0,wArray): 
+#            if errors[r,c]==255:
+#                dualMap[r,c,:]=[0,0,255];    
+#    
+    cv2.imshow('Compare', dualMap)    
     
     key = cv2.waitKey(20)
     if key == 27: # exit on ESC
