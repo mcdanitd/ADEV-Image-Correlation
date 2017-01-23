@@ -44,10 +44,17 @@ class CamFeed:
         self.vc1 = cv2.VideoCapture(1)
         self.vc2 = cv2.VideoCapture(2)
         
-        self.vc1.set(3,1600)
-        self.vc1.set(4,1200)
-        self.vc2.set(3,1600)
-        self.vc2.set(4,1200)
+        calibFile = np.load('calibFile.npz')
+        self.mtx = calibFile['arr_0']
+        self.dist = calibFile['arr_1']
+        self.newcameramtx = calibFile['arr_2']
+        self.roi = calibFile['arr_3']
+        self.x,self.y,self.w,self.h = self.roi
+        
+#        self.vc1.set(3,1600)
+#        self.vc1.set(4,1200)
+#        self.vc2.set(3,1600)
+#        self.vc2.set(4,1200)
         
         while (not (self.camsOpen())):
             pass
@@ -76,7 +83,6 @@ class CamFeed:
             
         else:
             rval, frame = self.vc2.read()
-        h, w = frame.shape[:2]
             
         #  
             # undistort the image
@@ -87,6 +93,9 @@ class CamFeed:
         #    newImage2 = cv2.undistort(newImage2, K, d, None, newcamera2)
         #       
             # rotate images so they look right
+        frame = cv2.undistort(frame, self.mtx, self.dist, None, self.newcameramtx)
+        frame = frame[self.y:self.y+self.h, self.x:self.x+self.w]
+        h, w = frame.shape[:2]
         M = cv2.getRotationMatrix2D((w/2,h/2),180,1)    
         frame = cv2.warpAffine(frame,M,(w,h))
             

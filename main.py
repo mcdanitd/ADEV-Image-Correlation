@@ -17,11 +17,11 @@ feed = camFeed.CamFeed()
 print "opening PMD"
 depth = PMDReceiver.PMDReceiver()
 
-cameraMaxHorzAngle = 90
-cameraMaxVertAngle = 90
-depthMaxHorzAngle = 82
-depthMaxVertAngle = 66
-separation = 0.04269      #distance between cameras
+cameraMaxHorzAngle = 83.14 # calculated value, 90 is published
+cameraMaxVertAngle = 66    # calculated value, 90 is published
+depthMaxHorzAngle = 64     # calculated value, 66 is published value
+depthMaxVertAngle = 82
+separation = 0.04242      #distance between cameras
 print "Starting feed display"
 depthArray = depth.getImage()
 depthArray1 = depth.getImage()
@@ -43,8 +43,8 @@ while(1):
     left = feed.getImage(1)
     right = feed.getImage(2)
     
-    left = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
-    right = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
+#    left = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
+#    right = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
     
     depthArray4 = depthArray3
     depthArray3 = depthArray2
@@ -85,12 +85,12 @@ while(1):
 
     errors = numpy.zeros((hArray,wArray),dtype=int)
     
-    compArray = numpy.zeros((2,hArray,wArray), dtype=numpy.uint8)
+    compArray = numpy.zeros((2,hArray,wArray,3), dtype=numpy.uint8)
     midCompArray = numpy.zeros((2,hArray/2,wArray/2))
     col=-1
     for r in range(0,hArray):         
-        VertAngle = (r/hArray)*depthMaxVertAngle + (cameraMaxVertAngle-depthMaxVertAngle)/2
-        lWebcamYValue = webcamRows*VertAngle/cameraMaxVertAngle
+        VertAngle = int((float(r)/float(hArray))*float(depthMaxVertAngle) + (float(cameraMaxVertAngle)-float(depthMaxVertAngle))/float(2))
+        lWebcamYValue = int(float(webcamRows)*float(VertAngle)/float(cameraMaxVertAngle))
         rWebcamYValue = webcamRows*VertAngle/cameraMaxVertAngle
                 
         for c in range(0,wArray): 
@@ -107,10 +107,10 @@ while(1):
             BL = 90 - DL
             lWebcamXValue = (BL + 45)*webcamColumns/cameraMaxHorzAngle
 
-            if (lWebcamXValue < w) and (lWebcamXValue>=0):
+            if (lWebcamXValue < webcamColumns) and (lWebcamXValue>=0) and rWebcamYValue>=0 and rWebcamYValue<webcamRows:
                 leftMap[r,c,0] = lWebcamYValue
                 leftMap[r,c,1] = lWebcamXValue
-                compArray[0,r,c] = int(left[lWebcamYValue,lWebcamXValue])
+                compArray[0,r,c,:] = left[lWebcamYValue,lWebcamXValue,:]
                 leftInverseMap[lWebcamYValue,lWebcamXValue] = x
 #                
 #                    midCompArray[0,r-hArray/4,c-wArray/4] = left[lWebcamYValue,lWebcamXValue]
@@ -121,20 +121,20 @@ while(1):
             DR = 180 - FL - E
             BR = DR - 90
             rWebcamXValue = (BR + 45)*webcamColumns/cameraMaxHorzAngle
-            if rWebcamXValue < w and rWebcamXValue>=0:
+            if rWebcamXValue < w and rWebcamXValue>=0 and rWebcamYValue>=0 and rWebcamYValue<h:
                 rightMap[r,c,0] = rWebcamYValue
                 rightMap[r,c,1] = rWebcamXValue
-                compArray[1,r,c] = int(right[rWebcamYValue,rWebcamXValue])
+                compArray[1,r,c, :] = right[rWebcamYValue,rWebcamXValue, :]
                 rightInverseMap[rWebcamYValue,rWebcamXValue] = x
                 
-            if abs(compArray[0,r,c]-compArray[1,r,c]<tolerance):
-                success+=1
-                if (r>hArray/4)and(r<hArray*3/4)and(c>wArray/4)and(c<wArray*3/4):
-                    middle50Success+=1
-                if (r>3*hArray/8)and(r<hArray*5/8)and(c>wArray*3/8)and(c<wArray*5/8):
-                    middle25Success+=1
-            else:
-                errors[r,c]=255;
+#            if abs(compArray[0,r,c]-compArray[1,r,c]<tolerance):
+#                success+=1
+#                if (r>hArray/4)and(r<hArray*3/4)and(c>wArray/4)and(c<wArray*3/4):
+#                    middle50Success+=1
+#                if (r>3*hArray/8)and(r<hArray*5/8)and(c>wArray*3/8)and(c<wArray*5/8):
+#                    middle25Success+=1
+#            else:
+#                errors[r,c]=255;
                     
     print loops
     successRate = float(success)/(hArray*wArray)
@@ -150,16 +150,16 @@ while(1):
     mid25SuccessHistory = float(mid25SuccessRate+(mid25SuccessHistory*(loops-1)))/loops
     print mid25SuccessHistory
     
-    dualMap = ((compArray[1,:,:])+(compArray[0,:,:]))/2
-    dualMap = cv2.cvtColor(dualMap,cv2.COLOR_GRAY2BGR)
-    errLoc = numpy.where(errors==255)
+#    dualMap = ((compArray[1,:,:])+(compArray[0,:,:]))/2
+#    dualMap = cv2.cvtColor(dualMap,cv2.COLOR_GRAY2BGR)
+#    errLoc = numpy.where(errors==255)
 #    for r in range(0,hArray):
 #        for c in range(0,wArray): 
 #            if errors[r,c]==255:
 #                dualMap[r,c,:]=[0,0,255];    
 #    
-    cv2.imshow('Compare', dualMap)    
-    
+    cv2.imshow('CompareL', compArray[0,:,:,:])    
+    cv2.imshow('CompareR', compArray[1,:,:,:])  
     key = cv2.waitKey(20)
     if key == 27: # exit on ESC
         break

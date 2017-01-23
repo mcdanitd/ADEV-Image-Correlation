@@ -44,9 +44,11 @@ class PMDReceiver:
         fImg = array('f', recv)
         
         img = np.reshape(fImg, (-1, self.cols))
-        h1, w1 = img.shape[:2]
-        M = cv2.getRotationMatrix2D((w1/2,h1/2),90,1)    
-        img = cv2.warpAffine(img,M,(w1,h1))
+        img = np.rot90(img,1)
+#        h1, w1 = img.shape[:2]
+#        M = cv2.getRotationMatrix2D((w1/2,h1/2),90,1)
+#        rotimg = np.zeros((w1,h1))
+#        rotimg = cv2.warpAffine(img,M,(h1,w1))
         
         	# Display
 #        cv2.imshow('DepthImage', img)
