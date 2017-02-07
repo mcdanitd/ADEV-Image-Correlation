@@ -132,37 +132,37 @@ class Correlator:
                     compArray[1,r,c, :] = right[rWebcamYValue,rWebcamXValue, :]
                     self.rightInverseMap[rWebcamYValue,rWebcamXValue] = x
                     
-    #            if abs(compArray[0,r,c]-compArray[1,r,c]<self.tolerance):
-    #                success+=1
-    #                if (r>hArray/4)and(r<hArray*3/4)and(c>wArray/4)and(c<wArray*3/4):
-    #                    middle50Success+=1
-    #                if (r>3*hArray/8)and(r<hArray*5/8)and(c>wArray*3/8)and(c<wArray*5/8):
-    #                    middle25Success+=1
-    #            else:
-    #                errors[r,c]=255;
-    #                    
-    #    print self.loops
-    #    successRate = float(success)/(hArray*wArray)
-    #    print successRate
-    #    mid50SuccessRate = float(middle50Success)/((hArray*wArray)/4)
-    #    print mid50SuccessRate
-    #    mid25SuccessRate = float(middle25Success)/((hArray*wArray)/16)
-    #    print mid25SuccessRate
-    #    self.successHistory = float(successRate+(self.successHistory*(self.loops-1)))/self.loops
-    #    print self.successHistory
-    #    self.mid50SuccessHistory = float(mid50SuccessRate+(self.mid50SuccessHistory*(self.loops-1)))/self.loops
-    #    print self.mid50SuccessHistory
-    #    self.mid25SuccessHistory = float(mid25SuccessRate+(self.mid25SuccessHistory*(self.loops-1)))/self.loops
-    #    print self.mid25SuccessHistory
-    #    
-    #    dualMap = ((compArray[1,:,:])+(compArray[0,:,:]))/2
-    #    dualMap = cv2.cvtColor(dualMap,cv2.COLOR_GRAY2BGR)
-    #    errLoc = numpy.where(errors==255)
-    #    for r in range(0,hArray):
-    #        for c in range(0,wArray): 
-    #            if errors[r,c]==255:
-    #                dualMap[r,c,:]=[0,0,255];    
-    #    
+                if abs(compArray[0,r,c]-compArray[1,r,c]<self.tolerance):
+                    success+=1
+                    if (r>hArray/4)and(r<hArray*3/4)and(c>wArray/4)and(c<wArray*3/4):
+                        middle50Success+=1
+                    if (r>3*hArray/8)and(r<hArray*5/8)and(c>wArray*3/8)and(c<wArray*5/8):
+                        middle25Success+=1
+                else:
+                    errors[r,c]=255;
+                        
+        print self.loops
+        successRate = float(success)/(hArray*wArray)
+        print successRate
+        mid50SuccessRate = float(middle50Success)/((hArray*wArray)/4)
+        print mid50SuccessRate
+        mid25SuccessRate = float(middle25Success)/((hArray*wArray)/16)
+        print mid25SuccessRate
+        self.successHistory = float(successRate+(self.successHistory*(self.loops-1)))/self.loops
+        print self.successHistory
+        self.mid50SuccessHistory = float(mid50SuccessRate+(self.mid50SuccessHistory*(self.loops-1)))/self.loops
+        print self.mid50SuccessHistory
+        self.mid25SuccessHistory = float(mid25SuccessRate+(self.mid25SuccessHistory*(self.loops-1)))/self.loops
+        print self.mid25SuccessHistory
+        
+        dualMap = ((compArray[1,:,:])+(compArray[0,:,:]))/2
+        dualMap = cv2.cvtColor(dualMap,cv2.COLOR_GRAY2BGR)
+        errLoc = numpy.where(errors==255)
+        for r in range(0,hArray):
+            for c in range(0,wArray): 
+                if errors[r,c]==255:
+                    dualMap[r,c,:]=[0,0,255];    
+        
             compLResize = cv2.resize(compArray[0,:,:,:], None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
             compRResize = cv2.resize(compArray[1,:,:,:], None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
             
