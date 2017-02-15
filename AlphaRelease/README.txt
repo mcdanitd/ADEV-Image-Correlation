@@ -11,4 +11,4 @@ camFeed.py:
 PMDReceiver.py:
 	line 47: This line is also for rotation based on our set up, and may need to be commented out. 
 
-I think I was good and any changes to reflect changes in setup should propogate through and give good results, but let me know if there's anything going wrong.
+I think wrote everything the way I should have and any changes to reflect changes in setup should propogate through and give good results, but let me know if there's anything going wrong.
