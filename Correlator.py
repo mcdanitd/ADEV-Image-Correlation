@@ -22,7 +22,7 @@ class Correlator:
         print "opening PMD"
         self.depth = PMDReceiver.PMDReceiver()
         
-        self.cameraMaxHorzAngle = 83.14 # calculated value, 90 is published
+        self.cameraMaxHorzAngle = 83 # calculated value, 90 is published
         self.cameraMaxVertAngle = 66    # calculated value, 90 is published
         self.depthMaxHorzAngle = 64     # calculated value, 66 is published value
         self.depthMaxVertAngle = 82
@@ -97,7 +97,7 @@ class Correlator:
         for r in range(0,hArray):         
             VertAngle = int((float(r)/float(hArray))*float(self.depthMaxVertAngle) + (float(self.cameraMaxVertAngle)-float(self.depthMaxVertAngle))/float(2))
             lWebcamYValue = int(float(webcamRows)*float(VertAngle)/float(self.cameraMaxVertAngle))
-            rWebcamYValue = webcamRows*VertAngle/self.cameraMaxVertAngle
+            rWebcamYValue = int(webcamRows*VertAngle/self.cameraMaxVertAngle)
                     
             for c in range(0,wArray): 
                 y = self.depthArray[r,c]   
@@ -111,13 +111,13 @@ class Correlator:
                 FL = math.degrees(math.asin(self.separation*math.sin(math.radians(C))/wL))
                 DL = 180 - FL -C
                 BL = 90 - DL
-                lWebcamXValue = (BL + 45)*webcamColumns/self.cameraMaxHorzAngle
+                lWebcamXValue = int((BL + 45)*webcamColumns/self.cameraMaxHorzAngle)
     
                 if (lWebcamXValue < webcamColumns) and (lWebcamXValue>=0) and rWebcamYValue>=0 and rWebcamYValue<webcamRows:
                     leftMap[r,c,0] = lWebcamYValue
                     leftMap[r,c,1] = lWebcamXValue
-                    compArray[0,r,c,:] = left[lWebcamYValue,lWebcamXValue,:]
-                    self.leftInverseMap[lWebcamYValue,lWebcamXValue] = x
+                    compArray[0,r,c] = left[int(lWebcamYValue),int(lWebcamXValue),:]
+                    self.leftInverseMap[int(lWebcamYValue),int(lWebcamXValue)] = x
     #                
     #                    midCompArray[0,r-hArray/4,c-wArray/4] = left[lWebcamYValue,lWebcamXValue]
                         
@@ -126,7 +126,7 @@ class Correlator:
                 FR = math.degrees(math.asin(self.separation*math.sin(math.radians(E))/wR))
                 DR = 180 - FL - E
                 BR = DR - 90
-                rWebcamXValue = (BR + 45)*webcamColumns/self.cameraMaxHorzAngle
+                rWebcamXValue = int((BR + 45)*webcamColumns/self.cameraMaxHorzAngle)
                 if rWebcamXValue < w and rWebcamXValue>=0 and rWebcamYValue>=0 and rWebcamYValue<h:
                     rightMap[r,c,0] = rWebcamYValue
                     rightMap[r,c,1] = rWebcamXValue
@@ -167,13 +167,13 @@ class Correlator:
         compLResize = cv2.resize(compArray[0,:,:,:], None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
         compRResize = cv2.resize(compArray[1,:,:,:], None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
         
-        cv2.imshow('CompareL', compLResize)    
-        cv2.imshow('CompareR', compRResize)  
+#        cv2.imshow('CompareL', compLResize)    
+#        cv2.imshow('CompareR', compRResize)  
     
         compAvg = compLResize/2+compRResize/2
         
         compAvg = cv2.resize(compAvg, None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
-        cv2.imshow('Average Of Correlation', compAvg) 
+#        cv2.imshow('Average Of Correlation', compAvg) 
         return [self.depthArray, left, right]
             
             
