@@ -19,16 +19,18 @@ else:
     rval1 = False
 
 
-while rval1 & rval2:
+while rval1:
 	#code to store frame as an unique image here
     newImage1 = np.copy(frame1);
     tempfileName1 = fileName1+".jpg"
     cv2.imwrite(tempfileName1, newImage1)
     #code to store information in a .txt file
-    f= open("guru99.txt","w+")
-    f.write("Date and time" % (1))
+    f= open("Information.txt","w+")
+    f.write("Date and time")
+    f.write("\n")
     #run a loop to write a line for each distinct strawberry
-    f.write("Strawberry at coordinates" % (2))
+    f.write("Strawberry at coordinates")
+    f.write("\n")
     
     img = cv2.imread(fileName1+".jpg")  
     # read new image
