@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 #import antigravity
 import time
+import datetime
 
 fileName1 = "image1"
 fileName2 = "image2"
@@ -22,11 +23,12 @@ else:
 while rval1:
 	#code to store frame as an unique image here
     newImage1 = np.copy(frame1);
-    tempfileName1 = fileName1+".jpg"
+    tempfileName1 = fileName1+".png"
     cv2.imwrite(tempfileName1, newImage1)
     #code to store information in a .txt file
-    f= open("Information.txt","w+")
-    f.write("Date and time")
+    now = datetime.datetime.now()
+    f= open(str(now.year)+"_"+str(now.month)+"_"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)+"_"+str(now.second) + ".txt","w+")
+    f.write(str(now))
     f.write("\n")
     #run a loop to write a line for each distinct strawberry
     f.write("Strawberry at coordinates")
@@ -40,8 +42,6 @@ while rval1:
     key = cv2.waitKey(20)	#every 20 ms, checks if a key has been pressed.
     if key == 27: # exit on ESC
         break
-    
-	
 		
 	
     
