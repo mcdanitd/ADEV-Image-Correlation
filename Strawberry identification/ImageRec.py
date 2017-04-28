@@ -1,5 +1,5 @@
-# PythonDraft.py
-# This script is meant to be the 
+# ImageRec.py
+# Learning how to do image processing in Python
 
 import cv2
 import numpy as np
