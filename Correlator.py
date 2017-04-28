@@ -5,6 +5,7 @@ import math
 import numpy
 import time
 import numpy as np
+import ConfigParser
 #import sys, string, os
 
 #print "opening PmdUdpDumper"
@@ -37,7 +38,22 @@ class Correlator:
         self.successHistory = 0
         self.mid50SuccessHistory = 0
         self.mid25SuccessHistory = 0
-
+        
+        Config = ConfigParser.ConfigParser()
+        Config.read("settings.ini")
+        
+        self.minYLeft = Config.getint("SectionOne", "minYLeft")
+        self.maxYLeft = Config.getint("SectionOne", "maxYLeft") 
+        self.minXLeft = Config.getint("SectionOne", "minXLeft")
+        self.maxXLeft = Config.getint("SectionOne", "maxXLeft")
+        
+        self.minYRight = Config.getint("SectionOne", "minYRight")
+        self.maxYRight = Config.getint("SectionOne", "maxYRight") 
+        self.minXRight = Config.getint("SectionOne", "minXRight")
+        self.maxXRight = Config.getint("SectionOne", "maxXRight")
+        
+                
+        
 #depthimagefile = 0;
 
     def correlate(self):
@@ -48,6 +64,8 @@ class Correlator:
         left = self.feed.getImage(1)
         right = self.feed.getImage(2)
         
+        left = left[self.minYLeft:self.maxYLeft, self.minXLeft:self.maxXLeft]
+        right = right[self.minYRight:self.maxYRight, self.minXRight:self.maxXRight]
     #    left = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
     #    right = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
         
@@ -167,8 +185,8 @@ class Correlator:
         compLResize = cv2.resize(compArray[0,:,:,:], None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
         compRResize = cv2.resize(compArray[1,:,:,:], None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
         
-#        cv2.imshow('CompareL', compLResize)    
-#        cv2.imshow('CompareR', compRResize)  
+        cv2.imshow('CompareL', compLResize)    
+        cv2.imshow('CompareR', compRResize)  
     
         compAvg = compLResize/2+compRResize/2
         

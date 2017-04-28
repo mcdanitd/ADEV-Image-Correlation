@@ -124,6 +124,37 @@ def rightCameraClick(event): #TODO add over from left camera
     dy = dy[0]
     dz = dz[0]
     d  = d[0]
+#   do stuff to display/highlight clicked area on other images
+    [depth, left, right] = corr.correlate()
+    
+#    right = cv2.circle(right, rightCoor, 25, Scalar(0,255,255,100))
+#    right = cv2.cvtColor(right, cv2.COLOR_BGR2RGB) 
+#    rightImage = Image.fromarray(right)
+#    rightPhoto = ImageTk.PhotoImage(rightImage)
+#    rightLabel.configure(image=rightPhoto)
+#    rightLabel.image = rightPhoto
+    
+#    depth = cv2.circle(depth, depthCoor, 25, Scalar(0,255,255,100))
+#    depth = cv2.cvtColor(depth, cv2.COLOR_GRAY2RGB)
+#    depthImage = Image.fromarray(depth)
+#    depthPhoto = ImageTk.PhotoImage(depthImage)
+#    depthLabel.configure(image=depthPhoto)
+#    depthLabel.image = depthPhoto
+    
+    dxString = "dx:  " + "%.3f" % dx
+    dxLabel.configure(text = dxString)
+    
+    dyString = "dy:  " + "%.3f" % dy
+    dyLabel.configure(text = dyString)
+    
+    dzString = "dz:  " + "%.3f" % dz
+    dzLabel.configure(text = dzString)
+    
+    dString = "d:  " + "%.3f" % d
+    dLabel.configure(text = dString)
+    
+    bbString = "Right X: " + str(event.x) + "  Y: " + str(event.y)
+    bottomBar.configure(text = bbString)
     
  
 def checkAccuracy():
