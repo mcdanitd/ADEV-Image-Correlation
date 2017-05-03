@@ -104,8 +104,8 @@ class Correlator:
         leftMap = numpy.zeros((hArray,wArray,2))
         rightMap = numpy.zeros((hArray,wArray,2))
 #        print("cols: "+str(webcamColumns)+"   rows: " + str(webcamRows))
-        self.leftInverseMap = numpy.zeros((webcamRows,webcamColumns,1))
-        self.rightInverseMap = numpy.zeros((webcamRows,webcamColumns,1))
+        self.leftInverseMap = -1*numpy.ones((webcamRows,webcamColumns,1))
+        self.rightInverseMap = -1*numpy.ones((webcamRows,webcamColumns,1))
     
         errors = numpy.zeros((hArray,wArray),dtype=int)
         
@@ -268,12 +268,13 @@ class Correlator:
                 
             
     def privateGetDistance(self, x, y, inverseMap):
-        if inverseMap[y,x]!= 0:
+        if inverseMap[y,x]!= -1:
             return inverseMap[y,x]
         else:
             return self.pixelSearch(x,y,1,inverseMap)
             
     def pixelSearch(self,x,y,r,inverseMap):
+        # TODO: look for ways to utilize edge detection to improve accuracy.
         yLimit, xLimit = inverseMap.shape[:2]        
         numValues = 0
         sumValues = 0.0
@@ -296,20 +297,25 @@ class Correlator:
         
         for xval in range(xmin,xmax):
             
-            if inverseMap[ymin,xval]>0:
+            if inverseMap[ymin,xval]>=0:
                 numValues+=1;
                 sumValues+=inverseMap[ymin,xval]
-            if inverseMap[ymax,xval]>0:
+                print(sumValues)
+            if inverseMap[ymax,xval]>=0:
                 numValues+=1;
                 sumValues+=inverseMap[ymax,xval]
+                print(sumValues)
         for yval in range(ymin,ymax):
-            if inverseMap[yval,xmin]>0:
+            if inverseMap[yval,xmin]>=0:
                 numValues+=1;
                 sumValues+=inverseMap[yval,xmin]
-            if inverseMap[yval,xmax]>0:
+                print(sumValues)
+            if inverseMap[yval,xmax]>=0:
                 numValues+=1;
                 sumValues+=inverseMap[yval,xmax]
+                print(sumValues)
         if numValues>0:
+            print("\n")
             return sumValues/numValues
         else:
             return self.pixelSearch(x,y,r+1,inverseMap)
