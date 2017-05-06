@@ -10,26 +10,34 @@ import cv2
 from Tkinter import *
 from PIL import Image, ImageTk
 import numpy as np
+import DataStorage
 
 global leftLabel
 global rightLabel
 global depthLabel
+
+global left
+global right
 
 global distancesLabelFrame
 global dLabel
 global dxLabel
 global dyLabel
 global dzLabel
-global dEntry
-global dxEntry
-global dyEntry
-global dzEntry
-global testButton
-global testDiff
-global testDiffx
-global testDiffy
-global testDiffz
-global testDiffPercent
+
+global recordLeftButton
+global recordRightButton
+
+#global dEntry
+#global dxEntry
+#global dyEntry
+#global dzEntry
+#global testButton
+#global testDiff
+#global testDiffx
+#global testDiffy
+#global testDiffz
+#global testDiffPercent
 
 global d
 global dx
@@ -156,24 +164,32 @@ def rightCameraClick(event): #TODO add over from left camera
     bbString = "Right X: " + str(event.x) + "  Y: " + str(event.y)
     bottomBar.configure(text = bbString)
     
- 
-def checkAccuracy():
-    global d
-    global dx
-    global dy
-    global dz
+def recordLeft():
+    global left
+    DataStorage.save(left, "Left")
     
-    dxString = "diffx:  " + "%.3f" % (dx - float(dxEntry.get()))
-    testDiffx.configure(text = dxString)
+def recordRight():
+    global right
+    DataStorage.save(right, "Right")
+
     
-    dyString = "diffy:  " + "%.3f" % (dy - float(dyEntry.get()))
-    testDiffy.configure(text = dyString)
-    
-    dzString = "diffz:  " + "%.3f" % (dz - float(dzEntry.get()))
-    testDiffz.configure(text = dzString)
-    
-    dString = "diff:  " + "%.3f" % (d - float(dEntry.get()))
-    testDiff.configure(text = dString)
+#def checkAccuracy():
+#    global d
+#    global dx
+#    global dy
+#    global dz
+#    
+#    dxString = "diffx:  " + "%.3f" % (dx - float(dxEntry.get()))
+#    testDiffx.configure(text = dxString)
+#    
+#    dyString = "diffy:  " + "%.3f" % (dy - float(dyEntry.get()))
+#    testDiffy.configure(text = dyString)
+#    
+#    dzString = "diffz:  " + "%.3f" % (dz - float(dzEntry.get()))
+#    testDiffz.configure(text = dzString)
+#    
+#    dString = "diff:  " + "%.3f" % (d - float(dEntry.get()))
+#    testDiff.configure(text = dString)
     
     
     
@@ -200,43 +216,49 @@ distancesLabelFrame.grid(row = 1, column = 0)
 
 
 dxLabel = Label(distancesLabelFrame, text = "dx:")
-dxLabel.grid(row=0, column=0)
+dxLabel.grid(row=0, column=1)
 
 dyLabel = Label(distancesLabelFrame, text = "dy:")
-dyLabel.grid(row=1, column=0)
+dyLabel.grid(row=1, column=1)
 
 dzLabel = Label(distancesLabelFrame, text = "dz:")
-dzLabel.grid(row=2, column=0)
+dzLabel.grid(row=2, column=1)
 
 dLabel = Label(distancesLabelFrame, text = "d:")
-dLabel.grid(row=3, column=0)
+dLabel.grid(row=3, column=1)
 
-dxEntry = Entry(distancesLabelFrame, text = "dx:")
-dxEntry.grid(row=0, column=1)
+recordLeftButton = Button(distancesLabelFrame, text = "Record Left Data", command = recordLeft)
+recordLeftButton.grid(row=4, column=0)
 
-dyEntry = Entry(distancesLabelFrame, text = "dy:")
-dyEntry.grid(row=1, column=1)
+recordRightButton = Button(distancesLabelFrame, text = "Record Right Data", command = recordRight)
+recordRightButton.grid(row=4, column=2)
 
-dzEntry = Entry(distancesLabelFrame, text = "dz:")
-dzEntry.grid(row=2, column=1)
+#dxEntry = Entry(distancesLabelFrame, text = "dx:")
+#dxEntry.grid(row=0, column=1)
+#
+#dyEntry = Entry(distancesLabelFrame, text = "dy:")
+#dyEntry.grid(row=1, column=1)
+#
+#dzEntry = Entry(distancesLabelFrame, text = "dz:")
+#dzEntry.grid(row=2, column=1)
+#
+#dEntry = Entry(distancesLabelFrame, text = "d:")
+#dEntry.grid(row=3, column=1)
 
-dEntry = Entry(distancesLabelFrame, text = "d:")
-dEntry.grid(row=3, column=1)
-
-testButton = Button(distancesLabelFrame, text = "Check Accuracy", command = checkAccuracy)
-testButton.grid(row=4, column=1)
-
-testDiffx = Label(distancesLabelFrame, text = "DiffX")
-testDiffx.grid(row=0, column=2)
-
-testDiffy = Label(distancesLabelFrame, text = "DiffY")
-testDiffy.grid(row=1, column=2)
-
-testDiffz = Label(distancesLabelFrame, text = "DiffZ")
-testDiffz.grid(row=2, column=2)
-
-testDiff = Label(distancesLabelFrame, text = "Diff")
-testDiff.grid(row=3, column=2)
+#testButton = Button(distancesLabelFrame, text = "Check Accuracy", command = checkAccuracy)
+#testButton.grid(row=4, column=1)
+#
+#testDiffx = Label(distancesLabelFrame, text = "DiffX")
+#testDiffx.grid(row=0, column=2)
+#
+#testDiffy = Label(distancesLabelFrame, text = "DiffY")
+#testDiffy.grid(row=1, column=2)
+#
+#testDiffz = Label(distancesLabelFrame, text = "DiffZ")
+#testDiffz.grid(row=2, column=2)
+#
+#testDiff = Label(distancesLabelFrame, text = "Diff")
+#testDiff.grid(row=3, column=2)
 
 #testDiffPercent = Label(distancesLabelFrame, text = "DiffPercent")
 #testDiffPercent.grid(row=4, column=2)

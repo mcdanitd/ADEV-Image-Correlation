@@ -11,6 +11,9 @@ import ConfigParser
 #print "opening PmdUdpDumper"
 #os.system("C:/ADEV/cppToPy/src/c/build-PmdUdpDumper-Desktop_Qt_5_7_0_MinGW_32bit-Debug/debug/PmdUdpDumper.exe")
 
+UNASSIGNED = -1
+INVALID = 0
+
 class Correlator:
     
     def __init__(self):
@@ -275,6 +278,10 @@ class Correlator:
             
     def pixelSearch(self,x,y,r,inverseMap):
         # TODO: look for ways to utilize edge detection to improve accuracy.
+        
+        #TODO: the max search radius may need tweaking
+        if(r>20):
+            return np.zeros(1);
         yLimit, xLimit = inverseMap.shape[:2]        
         numValues = 0
         sumValues = 0.0
