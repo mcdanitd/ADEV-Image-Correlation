@@ -41,25 +41,46 @@ while rval1:
 	imageHSV = cv2.cvtColor(newImage1, cv2.COLOR_BGR2HSV)
 	
 	#create a binary mask of potential strawberry pixels
-	hue = newImage1[:,:,0]
-	sat = newImage1[:,:,1]
+	
+	#blue = newImage1[:,:,0]
+	#green = newImage1[:,:,1]
+	#red = newImage1[:,:,2]
+	#upperBound = 255
+	#lowerBound = 100
+	#retHue, threshRed = cv2.threshold(red,lowerBound,upperBound,cv2.THRESH_BINARY)
+	#retHue, threshBlue = cv2.threshold(blue,lowerBound,upperBound,cv2.THRESH_BINARY)
+	#retHue, threshGreen = cv2.threshold(green,lowerBound,upperBound,cv2.THRESH_BINARY)
     
-	upperHue = 0.15*255
-	lowerHue = 0
-	lowerSat = 0.5*255
-	retHue, threshHue = cv2.threshold(hue,lowerHue,upperHue,cv2.THRESH_BINARY)
-	retSat, threshSat = cv2.threshold(sat,lowerSat,255,cv2.THRESH_BINARY)
+	#hue = imageHSV[:,:,0]
+	#sat = imageHSV[:,:,1]
+	#value = imageHSV[:,:,2]
+	
+	redMin1 = np.array([0, 100, 0],np.uint8)	#Hue ranges 0-180, Saturation ranges 0-255, Value ranges 0-255
+	redMax1 = np.array([5, 255, 225],np.uint8)
+
+	redMin2 = np.array([160, 50, 0],np.uint8)
+	redMax2 = np.array([179, 255, 225],np.uint8)
+
+	red1 = cv2.inRange(imageHSV, redMin1, redMax1)
+	red2 = cv2.inRange(imageHSV, redMin2, redMax2)
+	
+	threshRed = np.zeros_like(red1)
+	cv2.bitwise_or(red1, red2, threshRed, mask=None)
+	
+	#retHue, threshHue = cv2.threshold(hue,lowerHue,upperHue,cv2.THRESH_BINARY)
+	#retSat, threshSat = cv2.threshold(sat,lowerSat,255,cv2.THRESH_BINARY)
     
     #combine hue and saturation thresholding
-	red = np.zeros((dimen[0], dimen[1]))
-	for x in range(0,dimen[0]-1):
-		for y in range(0,dimen[1]-1):
-			red[x,y] = int(hue[x,y]*sat[x,y])
+	#red = np.zeros((dimen[0], dimen[1]))
+	#for x in range(0,dimen[0]-1):
+	#	for y in range(0,dimen[1]-1):
+	#		red[x,y] = int(hue[x,y]*sat[x,y])
+	#red = threshHue
 	
 	#Morphological open, kernel will likely need to be tweaked.  It might be worth it for ADEV to look into using a custom kernel
 	kernel = np.ones((3,3),np.uint8)
-	morphed = cv2.erode(red, kernel, iterations = 1)
-	morphed = cv2.dilate(morphed, kernel, iterations = 2)
+	morphed = cv2.erode(threshRed, kernel, iterations = 2)
+	morphed = cv2.dilate(morphed, kernel, iterations = 3)
 	
 	#Connected components count.  How many strawberries are there, find centroids
 	connectivity = 8
@@ -77,15 +98,9 @@ while rval1:
 		f.write("\n")
 	
 	#REMOVE WHEN DONE
-	tempfileName2 = str(now.year)+"_"+str(now.month)+"_"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)+"_"+str(now.second) + "Mask.png"
+	tempfileName2 = str(now.year)+"_"+str(now.month)+"_"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)+"_"+str(now.second) + "Morphed.png"
 	cv2.imwrite(tempfileName2, morphed)
 	tempfileName3 = str(now.year)+"_"+str(now.month)+"_"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)+"_"+str(now.second) + "Reds.png"
-	cv2.imwrite(tempfileName3, reds)
-	tempfileName3 = str(now.year)+"_"+str(now.month)+"_"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)+"_"+str(now.second) + "ThreshBlue.png"
-	cv2.imwrite(tempfileName3, threshBlue)
-	tempfileName3 = str(now.year)+"_"+str(now.month)+"_"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)+"_"+str(now.second) + "ThreshGreen.png"
-	cv2.imwrite(tempfileName3, threshGreen)
-	tempfileName3 = str(now.year)+"_"+str(now.month)+"_"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)+"_"+str(now.second) + "ThreshRed.png"
 	cv2.imwrite(tempfileName3, threshRed)
 
 	img = cv2.imread(fileName1+".jpg")
