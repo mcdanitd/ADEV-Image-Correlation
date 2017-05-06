@@ -3,29 +3,18 @@ import cv2
 import glob
 import time
 
+#Takes "iters" amount of images from a camera and uses OpenCV to create a calibration matrix.
+
 class Calibration:
     
     def __init__(self):
-        pass
-    
-    def recursivePowerSet(self, points, iters, last, depth, maxdepth):
-        if depth>maxdepth:
-            return ones
-        for i in range(last+1,iters+1 - maxdepth):
-            ret = points[i]
-            return ret + (self.recursivePowerSet(points, iters, i, depth + 1, maxdepth))
-            
-            
-            
-    def mayn(self):
         print 'Start'
         
-        cam = cv2.VideoCapture(1)
+        cam = cv2.VideoCapture(1)	#value corresponds to camera to be calibrated
         
-        
-        iters=100
+        iters=100			#Number of images to take
         error_allowed = .10
-        col_min = 580
+        col_min = 580		#Minimun dimensions of final image
         row_min = 400
         
         mean_error=1
@@ -88,9 +77,7 @@ class Calibration:
                                                     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpointsSet, imgpointsSet, gray.shape[::-1],None,None)       
                                                     h, w = img.shape[:2]
                                                     newcameramtx, roi=cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))     
-                                                    x,y,w,h = roi  
-#                                                    print h-y
-#                                                    print w-x
+                                                    x,y,w,h = roi
                                                                 
                                                     tot_error = 0
                                                     for i in xrange(len(objpointsSet)):
@@ -141,6 +128,14 @@ class Calibration:
         
         SystemExit
     
+    def recursivePowerSet(self, points, iters, last, depth, maxdepth):
+        if depth>maxdepth:
+            return ones
+        for i in range(last+1,iters+1 - maxdepth):
+            ret = points[i]
+            return ret + (self.recursivePowerSet(points, iters, i, depth + 1, maxdepth))
+        
+    #Takes "iters" number of images
     def collectImages(self, cam, iters):    
     
         # termination criteria
