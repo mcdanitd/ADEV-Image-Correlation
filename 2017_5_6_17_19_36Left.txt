@@ -1,0 +1,5 @@
+2017-05-06 17:19:36.429000
+Strawberry at coordinates 311.006761599 , 203.680231871
+Strawberry at coordinates 326.475728155 , 18.4660194175
+Strawberry at coordinates 303.214285714 , 20.7142857143
+Strawberry at coordinates 259.0 , 24.0
