@@ -4,6 +4,7 @@ Created on Tue Mar 21 16:27:37 2017
 
 @author: georgedr
 """
+#This serves as the GUI for our project
 
 import Correlator
 import cv2
@@ -53,6 +54,7 @@ global bottomBar
 
 global corr
 
+#Updates the webcam and depth camera images in the GUI
 def update():
     [depth, left, right] = corr.correlate()
     
@@ -68,7 +70,6 @@ def update():
     rightLabel.configure(image=rightPhoto)
     rightLabel.image = rightPhoto
     
-#    depth = cv2.cvtColor(depth, cv2.COLOR_GRAY2RGB)
     depthImage = Image.fromarray(depth * 255 / np.amax(depth))
     depthPhoto = ImageTk.PhotoImage(depthImage)
     depthLabel.configure(image=depthPhoto)
@@ -77,7 +78,7 @@ def update():
     master.after(1000/30, update)
     
 
-        
+#Handles calculations for when the user clicks on the left camera's image
 def leftCameraClick(event):
     global d
     global dx
@@ -88,54 +89,13 @@ def leftCameraClick(event):
     dy = dy[0]
     dz = dz[0]
     d  = d[0]
-#   do stuff to display/highlight clicked area on other images
+	#TODO: Add ability to Correlator.py - do stuff to display/highlight clicked area on other images
     [depth, left, right] = corr.correlate()
-    
+
+#	 for highlighting correspong pixel in right camera and depth camera, needs more data from corr.correlate before implementing
+#	 clicking on left cameras image would highlight that object in the right camera's image
 #    right = cv2.circle(right, rightCoor, 25, Scalar(0,255,255,100))
-    right = cv2.cvtColor(right, cv2.COLOR_BGR2RGB) 
-    rightImage = Image.fromarray(right)
-    rightPhoto = ImageTk.PhotoImage(rightImage)
-    rightLabel.configure(image=rightPhoto)
-    rightLabel.image = rightPhoto
-    
-#    depth = cv2.circle(depth, depthCoor, 25, Scalar(0,255,255,100))
-#    depth = cv2.cvtColor(depth, cv2.COLOR_GRAY2RGB)
-#    depthImage = Image.fromarray(depth)
-#    depthPhoto = ImageTk.PhotoImage(depthImage)
-#    depthLabel.configure(image=depthPhoto)
-#    depthLabel.image = depthPhoto
-    
-    dxString = "dx:  " + "%.3f" % dx
-    dxLabel.configure(text = dxString)
-    
-    dyString = "dy:  " + "%.3f" % dy
-    dyLabel.configure(text = dyString)
-    
-    dzString = "dz:  " + "%.3f" % dz
-    dzLabel.configure(text = dzString)
-    
-    dString = "d:  " + "%.3f" % d
-    dLabel.configure(text = dString)
-    
-    bbString = "Left X: " + str(event.x) + "  Y: " + str(event.y)
-    bottomBar.configure(text = bbString)
-    
-    
-    
-def rightCameraClick(event): #TODO add over from left camera
-    global d
-    global dx
-    global dy
-    global dz
-    [dx, dy, dz, d] = corr.getDistance(event.x, event.y, False)
-    dx = dx[0]
-    dy = dy[0]
-    dz = dz[0]
-    d  = d[0]
-#   do stuff to display/highlight clicked area on other images
-    [depth, left, right] = corr.correlate()
-    
-#    right = cv2.circle(right, rightCoor, 25, Scalar(0,255,255,100))
+
 #    right = cv2.cvtColor(right, cv2.COLOR_BGR2RGB) 
 #    rightImage = Image.fromarray(right)
 #    rightPhoto = ImageTk.PhotoImage(rightImage)
@@ -161,9 +121,56 @@ def rightCameraClick(event): #TODO add over from left camera
     dString = "d:  " + "%.3f" % d
     dLabel.configure(text = dString)
     
+    bbString = "Left X: " + str(event.x) + "  Y: " + str(event.y)
+    bottomBar.configure(text = bbString)
+    
+    
+#Handles calculations for when the user clicks on the right camera's image
+def rightCameraClick(event): #TODO: add over from left camera
+    global d
+    global dx
+    global dy
+    global dz
+    [dx, dy, dz, d] = corr.getDistance(event.x, event.y, False)
+    dx = dx[0]
+    dy = dy[0]
+    dz = dz[0]
+    d  = d[0]
+#   do stuff to display/highlight clicked area on other images
+    #[depth, left, right] = corr.correlate()
+
+# same as in leftCameraClick
+#	 clicking onright cameras image would highlight that object in the leftt camera's image
+#    left = cv2.circle(left, leftCoor, 25, Scalar(0,255,255,100))
+#    left = cv2.cvtColor(left, cv2.COLOR_BGR2RGB) 
+#    leftImage = Image.fromarray(left)
+#    leftPhoto = ImageTk.PhotoImage(leftImage)
+#    leftLabel.configure(image=leftPhoto)
+#    leftLabel.image = leftPhoto
+    
+#    depth = cv2.circle(depth, depthCoor, 25, Scalar(0,255,255,100))
+#    depth = cv2.cvtColor(depth, cv2.COLOR_GRAY2RGB)
+#    depthImage = Image.fromarray(depth)
+#    depthPhoto = ImageTk.PhotoImage(depthImage)
+#    depthLabel.configure(image=depthPhoto)
+#    depthLabel.image = depthPhoto
+    
+    dxString = "dx:  " + "%.3f" % dx
+    dxLabel.configure(text = dxString)
+    
+    dyString = "dy:  " + "%.3f" % dy
+    dyLabel.configure(text = dyString)
+    
+    dzString = "dz:  " + "%.3f" % dz
+    dzLabel.configure(text = dzString)
+    
+    dString = "d:  " + "%.3f" % d
+    dLabel.configure(text = dString)
+    
     bbString = "Right X: " + str(event.x) + "  Y: " + str(event.y)
     bottomBar.configure(text = bbString)
     
+#These two functions call a script to save the current image as a .png and some information on it as a .txt
 def recordLeft():
     global left
     DataStorage.save(left, "Left")
@@ -173,6 +180,7 @@ def recordRight():
     DataStorage.save(right, "Right")
 
     
+    #Uncomment to be able to check the correlation accuracy
 #def checkAccuracy():
 #    global d
 #    global dx
@@ -233,6 +241,7 @@ recordLeftButton.grid(row=4, column=0)
 recordRightButton = Button(distancesLabelFrame, text = "Record Right Data", command = recordRight)
 recordRightButton.grid(row=4, column=2)
 
+#Uncomment this, too to be able to check the correlation accuracy
 #dxEntry = Entry(distancesLabelFrame, text = "dx:")
 #dxEntry.grid(row=0, column=1)
 #
@@ -269,7 +278,7 @@ bottomBar.grid(row=2)
 
 
 
-#mouseclick event
+#Mouseclick event, calls relevant functions on user click
 leftLabel.bind("<Button 1>",leftCameraClick)
 rightLabel.bind("<Button 1>",rightCameraClick)
 
