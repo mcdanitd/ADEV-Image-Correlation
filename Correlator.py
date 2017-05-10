@@ -79,11 +79,8 @@ class Correlator:
 #        cv2.imshow('Left', left)
 #        cv2.imshow('Right', right)
         
-        
-        webcamRows, webcamColumns = left.shape[:2]  
-        
-        h, w = right.shape[:2]
-        
+        # getting sizes of webcam image and depth array
+        webcamRows, webcamColumns = left.shape[:2]            
         hArray, wArray = self.depthArray.shape[:2]    
         
         # these are the arrays that are the size of the depthcam
@@ -113,7 +110,7 @@ class Correlator:
                 
                 # if the depth from the PMD is 0 (flagged as invalid), don't correlate
                 if (x!=0):  
-                    # Variable here are pretty arbitrarily named, refer to the diagram  ###
+                    # Variables here are pretty arbitrarily named, refer to the diagram  ###
                     # TODO: make clean diagram of this and put file name here------------^.
                     A = ((float(c)/wArray)*self.depthMaxHorzAngle)-(self.depthMaxHorzAngle/2)                  
                     
@@ -172,6 +169,7 @@ class Correlator:
     def getDistance(self, x, y, isLeft):
         # TODO: Change these values based on where origin of coordinate system 
         # should be. Currently centered on PMD lens
+        
         if(isLeft):
             dxMod = -self.separation 
         else:
@@ -185,6 +183,9 @@ class Correlator:
         else:
             d =  self.privateGetDistance(x,y,self.rightInverseMap)
             maxX, maxY = self.feed.getImage(2).shape[:2]
+            
+        # Similar to the meat of the correlate function, the variables here are hard to give 
+        # meaningful names, refer to XXX.png to understand these variables.  
         maxX = float(maxX)
         maxY = float(maxY)
         x = float(x)
@@ -202,22 +203,36 @@ class Correlator:
         
                 
                 
-            
+        """
+        called by getDistance with the desired webcam;
+        returns the distance of the desired pixel or calls for a search of the surrounding pixels
+        """
     def privateGetDistance(self, x, y, inverseMap):
         if inverseMap[y,x]!= -1:
             return inverseMap[y,x]
         else:
             return self.pixelSearch(x,y,1,inverseMap)
             
+        """
+        used to recursively find the nearest pixel with an associated depth value by searching concentric squares. 
+        (x,y) is the center of the search, r is the current radius (technically half side length) to search.
+        """
     def pixelSearch(self,x,y,r,inverseMap):
-        # TODO: look for ways to utilize edge detection to improve accuracy.
-        
-        #TODO: the max search radius may need tweaking
-        if(r>20):
+        # TODO: look for ways to utilize edge detection to improve accuracy, might not be worth extra calculating time.
+        # TODO: This searches using concentric squares as it was faster to get implemented and, 
+        #       for smaller max radii, wouldn't be too different from concentric circles, in the 
+        #       future, it might be wise to switch to a concentric circle searching algorithm.
+        # TODO: the max search radius may need tweaking
+        maxRadius = 20
+        if(r>maxRadius):
             return np.zeros(1);
         yLimit, xLimit = inverseMap.shape[:2]        
         numValues = 0
         sumValues = 0.0
+        
+        # setting the bounds of the square to search,
+        # if the square would go out of bounds of the image, 
+        # the bounds of the square are set to the bounds of the image
         if y-r<0:
             ymin = 0
         else: 
@@ -235,8 +250,8 @@ class Correlator:
         else:
             xmax = x+r
         
-        for xval in range(xmin,xmax):
-            
+        # loops through the horizontal lines of the square
+        for xval in range(xmin,xmax):            
             if inverseMap[ymin,xval]>=0:
                 numValues+=1;
                 sumValues+=inverseMap[ymin,xval]
@@ -245,6 +260,8 @@ class Correlator:
                 numValues+=1;
                 sumValues+=inverseMap[ymax,xval]
                 print(sumValues)
+        
+        # loops through the vertical lines of the square
         for yval in range(ymin,ymax):
             if inverseMap[yval,xmin]>=0:
                 numValues+=1;
@@ -254,6 +271,10 @@ class Correlator:
                 numValues+=1;
                 sumValues+=inverseMap[yval,xmax]
                 print(sumValues)
+        
+        # checks to see if a depth was found, 
+        # if so, the average of the depths found is returned,
+        # if not, a recursive call is made with an increased radius
         if numValues>0:
             print("\n")
             return sumValues/numValues

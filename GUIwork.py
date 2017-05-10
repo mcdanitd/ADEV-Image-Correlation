@@ -4,7 +4,9 @@ Created on Tue Mar 21 16:27:37 2017
 
 @author: georgedr
 """
-#This serves as the GUI for our project
+# This serves as the GUI for the correlator. This may be useful as a guide
+# for demonstrating how the robot should interface with the correlation algorithm 
+
 
 import Correlator
 import cv2
