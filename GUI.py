@@ -58,9 +58,9 @@ global corr
 
 #Updates the webcam and depth camera images in the GUI
 def update():
-    [depth, left, right] = corr.correlate()
+    [depth, left, right] = corr.correlate()  # gets the images
     
-    left = cv2.cvtColor(left, cv2.COLOR_BGR2RGB)
+    left = cv2.cvtColor(left, cv2.COLOR_BGR2RGB) # need to convert from openCV's BGR to RGB for TKinter
     leftImage = Image.fromarray(left)  
     leftPhoto = ImageTk.PhotoImage(leftImage)
     leftLabel.configure(image=leftPhoto)
@@ -72,7 +72,9 @@ def update():
     rightLabel.configure(image=rightPhoto)
     rightLabel.image = rightPhoto
     
-    depthImage = Image.fromarray(depth * 255 / np.amax(depth))
+    # the displayed depth image is scaled and formatted such that the furthest 
+    # distance is pure white. 
+    depthImage = Image.fromarray(depth * 255 / np.amax(depth)) 
     depthPhoto = ImageTk.PhotoImage(depthImage)
     depthLabel.configure(image=depthPhoto)
     depthLabel.image = depthPhoto
@@ -142,7 +144,7 @@ def rightCameraClick(event): #TODO: add over from left camera
     #[depth, left, right] = corr.correlate()
 
 # same as in leftCameraClick
-#	 clicking onright cameras image would highlight that object in the leftt camera's image
+#	 clicking on right cameras image would highlight that object in the leftt camera's image
 #    left = cv2.circle(left, leftCoor, 25, Scalar(0,255,255,100))
 #    left = cv2.cvtColor(left, cv2.COLOR_BGR2RGB) 
 #    leftImage = Image.fromarray(left)
