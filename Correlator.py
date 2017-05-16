@@ -184,7 +184,7 @@ class Correlator:
             d =  self.privateGetDistance(x,y,self.rightInverseMap)
             maxX, maxY = self.feed.getImage(2).shape[:2]
             
-        # Similar to the meat of the correlate function, the variables here are hard to give 
+        # TODO: Similar to the meat of the correlate function, the variables here are hard to give 
         # meaningful names, refer to XXX.png to understand these variables.  
         maxX = float(maxX)
         maxY = float(maxY)
